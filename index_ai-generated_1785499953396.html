@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Imposter Helper</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111830; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --danger:#ef4444; --btn:#1f2937; --btn2:#0ea5e9;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text); background:linear-gradient(180deg,#0b1020,#0b1428 40%,#0e1530);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    .container{max-width:680px;margin:0 auto;padding:16px 16px 32px}
+    header{position:sticky;top:0;background:transparent;padding:16px 0 8px;backdrop-filter:saturate(140%) blur(6px)}
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .card{background:var(--card); border:1px solid rgba(148,163,184,.18); border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(2,6,23,.35)}
+    .grid{display:grid; gap:12px}
+    label{font-size:14px;color:var(--muted)}
+    input,select,button,textarea{
+      width:100%; padding:14px 14px; border-radius:12px; border:1px solid rgba(148,163,184,.25);
+      background:#0f172a; color:var(--text); outline:none;
+    }
+    input::placeholder, textarea::placeholder{color:#94a3b8aa}
+    button{cursor:pointer; font-weight:600; letter-spacing:.2px; transition:transform .06s ease, background .2s ease, opacity .2s}
+    button:active{transform:scale(.98)}
+    .row{display:flex; gap:12px}
+    .row > *{flex:1}
+    .btn-primary{background:linear-gradient(135deg,#22c55e,#16a34a); border-color:transparent}
+    .btn-secondary{background:linear-gradient(135deg,#38bdf8,#0ea5e9); border-color:transparent}
+    .btn-muted{background:#0f172a}
+    .btn-danger{background:linear-gradient(135deg,#f43f5e,#ef4444); border-color:transparent}
+    .hint{font-size:13px;color:var(--muted)}
+    .center{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px}
+    .big{font-size:40px; font-weight:800; letter-spacing:.3px}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#0b1222; border:1px solid rgba(148,163,184,.25); font-size:13px; color:var(--muted)}
+    .screen{display:none}
+    .screen.active{display:block; animation:fade .18s ease}
+    @keyframes fade{from{opacity:.001; transform:translateY(3px)} to{opacity:1; transform:none}}
+    .footer{margin-top:16px; display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted); font-size:13px}
+    .spacer{height:6vh}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="pill">Imposter Helper • Offline Ready</div>
+    </header>
+
+    <main id="app" class="grid">
+      <!-- Setup Screen -->
+      <section id="setup" class="card screen active">
+        <h2 style="margin:4px 0 10px">New Game Setup</h2>
+        <div class="grid">
+          <div>
+            <label for="playerCount">Player count</label>
+            <select id="playerCount" autocomplete="off">
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6" selected>6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <div>
+            <label for="category">Category (shown to everyone)</label>
+            <input id="category" type="text" inputmode="text" placeholder="e.g., Animals" maxlength="60">
+          </div>
+          <div>
+            <label for="secret">Secret word (hidden from the Imposter)</label>
+            <input id="secret" type="text" inputmode="text" placeholder="e.g., Dolphin" maxlength="60">
+          </div>
+          <div class="row">
+            <button id="startBtn" class="btn-primary">Start Game</button>
+            <button id="randomBtn" class="btn-secondary" title="Suggest a random category and word">Randomize</button>
+          </div>
+          <div class="hint">How it works: One random player is the imposter and won’t see the secret word. Pass the device around—each player taps Confirm to view their info.</div>
+        </div>
+      </section>
+
+      <!-- Pass Device Screen -->
+      <section id="pass" class="card screen center">
+        <div class="big">Pass the device</div>
+        <div>Hand the phone to Player <span id="passPlayer"></span></div>
+        <div class="spacer"></div>
+        <button id="revealBtn" class="btn-primary" style="max-width:340px">I'm Player <span id="revealPlayer"></span></button>
+        <button id="restartFromPass" class="btn-muted" style="max-width:340px">Cancel game</button>
+      </section>
+
+      <!-- Reveal Screen -->
+      <section id="reveal" class="card screen">
+        <div class="center">
+          <div class="pill">Player <span id="playerNumber"></span></div>
+          <div id="revealText" class="big" style="margin-top:6px"></div>
+          <div id="revealDetail" class="hint"></div>
+          <div class="spacer"></div>
+          <button id="confirmBtn" class="btn-secondary" style="max-width:340px">Confirm (hide my screen)</button>
+        </div>
+      </section>
+
+      <!-- End / New Round Screen -->
+      <section id="end" class="card screen center">
+        <div class="big">All set!</div>
+        <div class="hint">Discussion time. When you’re ready, start a new round.</div>
+        <div class="spacer"></div>
+        <div class="row" style="max-width:420px; width:100%">
+          <button id="newRoundBtn" class="btn-primary">New Round</button>
+          <button id="editSetupBtn" class="btn-muted">Edit Setup</button>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">
+      <span>Works fully offline • Installable</span>
+      <button id="installBtn" class="btn-muted" style="width:auto; padding:8px 12px">Install</button>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    'use strict';
+
+    // Simple state container kept only in-memory per session
+    const state = {
+      players: 6,
+      category: '',
+      secret: '',
+      order: [],
+      imposterIndex: -1,
+      turn: 0,
+    };
+
+    // Elements
+    const el = id => document.getElementById(id);
+    const screens = {
+      setup: el('setup'),
+      pass: el('pass'),
+      reveal: el('reveal'),
+      end: el('end'),
+    };
+
+    const playerCount = el('playerCount');
+    const category = el('category');
+    const secret = el('secret');
+
+    const startBtn = el('startBtn');
+    const randomBtn = el('randomBtn');
+
+    const passPlayer = el('passPlayer');
+    const revealPlayer = el('revealPlayer');
+
+    const playerNumber = el('playerNumber');
+    const revealText = el('revealText');
+    const revealDetail = el('revealDetail');
+
+    const revealBtn = el('revealBtn');
+    const confirmBtn = el('confirmBtn');
+
+    const restartFromPass = el('restartFromPass');
+
+    const newRoundBtn = el('newRoundBtn');
+    const editSetupBtn = el('editSetupBtn');
+
+    const installBtn = el('installBtn');
+
+    // Helper functions
+    const show = key => {
+      for (const k in screens) screens[k].classList.remove('active');
+      screens[key].classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    };
+
+    const shuffle = arr => {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    const samplePrompts = [
+      ['Animals','Dolphin'],['Fruits','Pineapple'],['Countries','Japan'],['Jobs','Firefighter'],
+      ['Sports','Basketball'],['Movies','Inception'],['Desserts','Tiramisu'],['Planets','Mars'],
+      ['Instruments','Violin'],['Colors','Turquoise'],['Cities','Paris'],['Vehicles','Submarine']
+    ];
+
+    function startGame(){
+      const count = parseInt(playerCount.value, 10) || 3;
+      const cat = (category.value||'').trim();
+      const sec = (secret.value||'').trim();
+      if (!cat || !sec){
+        alert('Please enter both a category and a secret word.');
+        return;
+      }
+      if (count < 3){
+        alert('Minimum 3 players.');
+        return;
+      }
+      state.players = count;
+      state.category = cat;
+      state.secret = sec;
+      state.order = shuffle(Array.from({length:count},(_,i)=>i+1));
+      state.imposterIndex = Math.floor(Math.random()*count); // index in order array
+      state.turn = 0;
+      updatePassScreen();
+      show('pass');
+    }
+
+    function updatePassScreen(){
+      const playerId = state.order[state.turn];
+      passPlayer.textContent = playerId;
+      revealPlayer.textContent = playerId;
+    }
+
+    function revealToCurrentPlayer(){
+      const playerId = state.order[state.turn];
+      const isImposter = state.turn === state.imposterIndex;
+      playerNumber.textContent = playerId;
+      if (isImposter){
+        revealText.textContent = 'You are the Imposter';
+        revealText.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ef4444';
+        revealDetail.textContent = `Category: ${state.category}`;
+      } else {
+        revealText.textContent = state.secret;
+        revealText.style.color = '';
+        revealDetail.textContent = `Category: ${state.category}`;
+      }
+      show('reveal');
+    }
+
+    function confirmAndNext(){
+      state.turn++;
+      if (state.turn >= state.players){
+        show('end');
+      } else {
+        updatePassScreen();
+        show('pass');
+      }
+    }
+
+    function newRound(resetSetup){
+      if (resetSetup){
+        category.focus();
+        show('setup');
+      } else {
+        // keep category/secret, just reshuffle
+        state.order = shuffle(Array.from({length:state.players},(_,i)=>i+1));
+        state.imposterIndex = Math.floor(Math.random()*state.players);
+        state.turn = 0;
+        updatePassScreen();
+        show('pass');
+      }
+    }
+
+    // Event bindings
+    startBtn.addEventListener('click', startGame);
+    randomBtn.addEventListener('click', ()=>{
+      const [c,w] = samplePrompts[Math.floor(Math.random()*samplePrompts.length)];
+      category.value = c; secret.value = w;
+    });
+
+    revealBtn.addEventListener('click', revealToCurrentPlayer);
+    confirmBtn.addEventListener('click', confirmAndNext);
+
+    restartFromPass.addEventListener('click', ()=> show('setup'));
+
+    newRoundBtn.addEventListener('click', ()=> newRound(false));
+    editSetupBtn.addEventListener('click', ()=> newRound(true));
+
+    // Persist last used values locally for convenience
+    try{
+      const k = 'imposter-helper-last';
+      const saved = JSON.parse(localStorage.getItem(k) || 'null');
+      if (saved){
+        playerCount.value = saved.players || playerCount.value;
+        category.value = saved.category || '';
+        secret.value = saved.secret || '';
+      }
+      const save = () => localStorage.setItem(k, JSON.stringify({
+        players: parseInt(playerCount.value,10)||6,
+        category: category.value||'',
+        secret: secret.value||''
+      }));
+      playerCount.addEventListener('change', save);
+      category.addEventListener('input', save);
+      secret.addEventListener('input', save);
+    }catch(e){/* ignore storage issues */}
+
+    // Install/PWA
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-flex';
+    });
+    installBtn.addEventListener('click', async ()=>{
+      if (!deferredPrompt) return alert('Installation not available on this browser.');
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') installBtn.textContent = 'Installed';
+      deferredPrompt = null;
+    });
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator){
+      window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('sw.js').catch(()=>{});
+      });
+    }
+  })();
+  </script>
+
+  <!-- Inline manifest for offline install; also linked via href for browsers expecting a URL -->
+  <script type="application/manifest+json" id="inline-manifest">
+  {
+    "name": "Imposter Helper",
+    "short_name": "Imposter",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0b1020",
+    "theme_color": "#0f172a",
+    "icons": [
+      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  }
+  </script>
+
+  <script>
+    // For browsers that require a separate manifest file, generate it from the inline script at load time
+    (function(){
+      const link = document.querySelector('link[rel="manifest"]');
+      const inline = document.getElementById('inline-manifest');
+      if (link && inline){
+        const blob = new Blob([inline.textContent], {type: 'application/manifest+json'});
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+      }
+    })();
+  </script>
+
+  <script>
+  // Lightweight service worker (injected at runtime) for full offline support
+  (function(){
+    const swCode = `
+      const CACHE = 'imposter-helper-v1';
+      const ASSETS = [
+        './',
+        'index.html',
+        'icon-192.png',
+        'icon-512.png'
+      ];
+      self.addEventListener('install', e => {
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(()=> self.skipWaiting()));
+      });
+      self.addEventListener('activate', e => {
+        e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+        self.clients.claim();
+      });
+      self.addEventListener('fetch', e => {
+        const req = e.request;
+        e.respondWith(
+          caches.match(req).then(res => res || fetch(req).then(r => {
+            const copy = r.clone();
+            caches.open(CACHE).then(c => { if (req.method==='GET' && r.ok) c.put(req, copy); });
+            return r;
+          }).catch(()=> caches.match('index.html')))
+        );
+      });
+    `;
+    // Create sw.js file if it doesn't exist yet
+    fetch('sw.js').then(()=>{/* ok */}).catch(()=>{
+      const blob = new Blob([swCode], {type:'text/javascript'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'sw.js';
+      a.style.display='none';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  })();
+  </script>
+
+  <!-- Tiny embedded icons as data fallback -->
+  <script>
+    (function(){
+      // Generate simple solid icons on the fly if not present
+      function ensureIcon(size){
+        const name = `icon-${size}.png`;
+        return fetch(name).catch(()=>{
+          const c = document.createElement('canvas');
+          c.width = c.height = size;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,size,size);
+          ctx.fillStyle = '#22c55e';
+          ctx.beginPath(); ctx.arc(size/2, size/2, size*0.34, 0, Math.PI*2); ctx.fill();
+          c.toBlob(b=>{
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(b);
+            a.download = name; a.style.display='none'; document.body.appendChild(a); a.click(); a.remove();
+          }, 'image/png');
+        });
+      }
+      ensureIcon(192); ensureIcon(512);
+    })();
+  </script>
+</body>
+</html>
