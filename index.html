@@ -3,46 +3,63 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#ffffff" />
   <title>Imposter Helper</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
+    /* Light theme (default): white background, black text */
     :root{
-      --bg:#000000; --card:#1a1a1a; --muted:#808080; --text:#ffffff; --accent:#000000; --danger:#ffffff; --btn:#333333; --btn2:#ffffff;
+      --bg:#ffffff;
+      --card:#ffffff;
+      --muted:#666666;
+      --text:#000000;
+      --accent:#000000;
+      --danger:#c62828;
+      --btn:#f3f3f3;
+      --btn2:#000000;
     }
+
+    /* Automatic dark mode if the user prefers it */
+    @media (prefers-color-scheme: dark) {
+      :root{
+        --bg:#000000; --card:#1a1a1a; --muted:#808080; --text:#ffffff; --accent:#000000; --danger:#ffffff; --btn:#333333; --btn2:#ffffff;
+      }
+      meta[name="theme-color"] { color: var(--bg); }
+    }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text); background:#000000;
+      color:var(--text); background:var(--bg);
       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
     .container{max-width:680px;margin:0 auto;padding:16px 16px 32px}
-    header{position:sticky;top:0;background:transparent;padding:16px 0 8px;backdrop-filter:saturate(140%) blur(6px)}
+    header{position:sticky;top:0;background:transparent;padding:16px 0 8px}
     h1{margin:0;font-size:28px;letter-spacing:.2px}
-    .card{background:var(--card); border:2px solid #ffffff; border-radius:8px; padding:16px; box-shadow:none}
+    .card{background:var(--card); border:2px solid var(--text); border-radius:8px; padding:16px; box-shadow:none}
     .grid{display:grid; gap:12px}
     label{font-size:14px;color:var(--muted)}
     input,select,button,textarea{
-      width:100%; padding:14px 14px; border-radius:4px; border:2px solid #ffffff;
-      background:#000000; color:var(--text); outline:none;
+      width:100%; padding:14px 14px; border-radius:4px; border:2px solid var(--text);
+      background:var(--bg); color:var(--text); outline:none;
     }
-    input::placeholder, textarea::placeholder{color:#808080}
+    input::placeholder, textarea::placeholder{color:var(--muted)}
     button{cursor:pointer; font-weight:600; letter-spacing:.2px; transition:transform .06s ease, background .2s ease, opacity .2s}
     button:active{transform:scale(.98)}
     .row{display:flex; gap:12px}
     .row > *{flex:1}
-    .btn-primary{background:#000000; border:2px solid #ffffff; color:#ffffff}
-    .btn-secondary{background:#ffffff; border:2px solid #ffffff; color:#000000}
-    .btn-muted{background:#000000; border:2px solid #808080; color:#ffffff}
-    .btn-danger{background:#000000; border:2px solid #ffffff; color:#ffffff}
+    .btn-primary{background:var(--bg); border:2px solid var(--text); color:var(--text)}
+    .btn-secondary{background:var(--text); border:2px solid var(--text); color:var(--bg)}
+    .btn-muted{background:var(--bg); border:2px solid var(--muted); color:var(--text)}
+    .btn-danger{background:var(--bg); border:2px solid var(--text); color:var(--text)}
     .hint{font-size:13px;color:var(--muted)}
     .center{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px}
     .big{font-size:40px; font-weight:800; letter-spacing:.3px}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:4px; background:#000000; border:2px solid #ffffff; font-size:13px; color:#ffffff}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:4px; background:var(--card); border:2px solid var(--text); font-size:13px; color:var(--text)}
     .screen{display:none}
     .screen.active{display:block; animation:fade .18s ease}
     @keyframes fade{from{opacity:.001; transform:translateY(3px)} to{opacity:1; transform:none}}
@@ -318,8 +335,8 @@
     "short_name": "Imposter",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#000000",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
     "icons": [
       { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
       { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
