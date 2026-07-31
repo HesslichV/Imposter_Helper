@@ -86,7 +86,7 @@
             <button id="startBtn" class="btn-primary">Start Game</button>
             <button id="randomBtn" class="btn-secondary" title="Suggest a random category and word">Randomize</button>
           </div>
-          <div class="hint">How it works: One random player is the imposter and won’t see the secret word. Pass the device around—each player taps Confirm to view their info.</div>
+          <div class="hint">How it works: One random player is the imposter and won't see the secret word. Pass the device around—each player taps Confirm to view their info.</div>
         </div>
       </section>
 
@@ -113,7 +113,7 @@
       <!-- End / New Round Screen -->
       <section id="end" class="card screen center">
         <div class="big">All set!</div>
-        <div class="hint">Discussion time. When you’re ready, start a new round.</div>
+        <div class="hint">Discussion time. When you're ready, start a new round.</div>
         <div class="spacer"></div>
         <div class="row" style="max-width:420px; width:100%">
           <button id="newRoundBtn" class="btn-primary">New Round</button>
@@ -211,7 +211,7 @@
       state.players = count;
       state.category = cat;
       state.secret = sec;
-      state.order = shuffle(Array.from({length:count},(_,i)=>i+1));
+      state.order = Array.from({length:count},(_,i)=>i+1);
       state.imposterIndex = Math.floor(Math.random()*count); // index in order array
       state.turn = 0;
       updatePassScreen();
@@ -255,8 +255,7 @@
         category.focus();
         show('setup');
       } else {
-        // keep category/secret, just reshuffle
-        state.order = shuffle(Array.from({length:state.players},(_,i)=>i+1));
+        // keep category/secret, just reassign imposter
         state.imposterIndex = Math.floor(Math.random()*state.players);
         state.turn = 0;
         updatePassScreen();
