@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#000000" />
   <title>Imposter Helper</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,38 +11,38 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     :root{
-      --bg:#0b1020; --card:#111830; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --danger:#ef4444; --btn:#1f2937; --btn2:#0ea5e9;
+      --bg:#000000; --card:#1a1a1a; --muted:#808080; --text:#ffffff; --accent:#000000; --danger:#ffffff; --btn:#333333; --btn2:#ffffff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text); background:linear-gradient(180deg,#0b1020,#0b1428 40%,#0e1530);
+      color:var(--text); background:#000000;
       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
     .container{max-width:680px;margin:0 auto;padding:16px 16px 32px}
     header{position:sticky;top:0;background:transparent;padding:16px 0 8px;backdrop-filter:saturate(140%) blur(6px)}
     h1{margin:0;font-size:28px;letter-spacing:.2px}
-    .card{background:var(--card); border:1px solid rgba(148,163,184,.18); border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(2,6,23,.35)}
+    .card{background:var(--card); border:2px solid #ffffff; border-radius:8px; padding:16px; box-shadow:none}
     .grid{display:grid; gap:12px}
     label{font-size:14px;color:var(--muted)}
     input,select,button,textarea{
-      width:100%; padding:14px 14px; border-radius:12px; border:1px solid rgba(148,163,184,.25);
-      background:#0f172a; color:var(--text); outline:none;
+      width:100%; padding:14px 14px; border-radius:4px; border:2px solid #ffffff;
+      background:#000000; color:var(--text); outline:none;
     }
-    input::placeholder, textarea::placeholder{color:#94a3b8aa}
+    input::placeholder, textarea::placeholder{color:#808080}
     button{cursor:pointer; font-weight:600; letter-spacing:.2px; transition:transform .06s ease, background .2s ease, opacity .2s}
     button:active{transform:scale(.98)}
     .row{display:flex; gap:12px}
     .row > *{flex:1}
-    .btn-primary{background:linear-gradient(135deg,#22c55e,#16a34a); border-color:transparent}
-    .btn-secondary{background:linear-gradient(135deg,#38bdf8,#0ea5e9); border-color:transparent}
-    .btn-muted{background:#0f172a}
-    .btn-danger{background:linear-gradient(135deg,#f43f5e,#ef4444); border-color:transparent}
+    .btn-primary{background:#000000; border:2px solid #ffffff; color:#ffffff}
+    .btn-secondary{background:#ffffff; border:2px solid #ffffff; color:#000000}
+    .btn-muted{background:#000000; border:2px solid #808080; color:#ffffff}
+    .btn-danger{background:#000000; border:2px solid #ffffff; color:#ffffff}
     .hint{font-size:13px;color:var(--muted)}
     .center{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px}
     .big{font-size:40px; font-weight:800; letter-spacing:.3px}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#0b1222; border:1px solid rgba(148,163,184,.25); font-size:13px; color:var(--muted)}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:4px; background:#000000; border:2px solid #ffffff; font-size:13px; color:#ffffff}
     .screen{display:none}
     .screen.active{display:block; animation:fade .18s ease}
     @keyframes fade{from{opacity:.001; transform:translateY(3px)} to{opacity:1; transform:none}}
@@ -182,14 +182,6 @@
       window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    const shuffle = arr => {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    };
-
     const samplePrompts = [
       ['Animals','Dolphin'],['Fruits','Pineapple'],['Countries','Japan'],['Jobs','Firefighter'],
       ['Sports','Basketball'],['Movies','Inception'],['Desserts','Tiramisu'],['Planets','Mars'],
@@ -212,7 +204,7 @@
       state.category = cat;
       state.secret = sec;
       state.order = Array.from({length:count},(_,i)=>i+1);
-      state.imposterIndex = Math.floor(Math.random()*count); // index in order array
+      state.imposterIndex = Math.floor(Math.random()*count);
       state.turn = 0;
       updatePassScreen();
       show('pass');
@@ -230,11 +222,9 @@
       playerNumber.textContent = playerId;
       if (isImposter){
         revealText.textContent = 'You are the Imposter';
-        revealText.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ef4444';
         revealDetail.textContent = `Category: ${state.category}`;
       } else {
         revealText.textContent = state.secret;
-        revealText.style.color = '';
         revealDetail.textContent = `Category: ${state.category}`;
       }
       show('reveal');
@@ -328,8 +318,8 @@
     "short_name": "Imposter",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0b1020",
-    "theme_color": "#0f172a",
+    "background_color": "#000000",
+    "theme_color": "#000000",
     "icons": [
       { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
       { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
@@ -403,8 +393,8 @@
           const c = document.createElement('canvas');
           c.width = c.height = size;
           const ctx = c.getContext('2d');
-          ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,size,size);
-          ctx.fillStyle = '#22c55e';
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,size,size);
+          ctx.fillStyle = '#000000';
           ctx.beginPath(); ctx.arc(size/2, size/2, size*0.34, 0, Math.PI*2); ctx.fill();
           c.toBlob(b=>{
             const a = document.createElement('a');
